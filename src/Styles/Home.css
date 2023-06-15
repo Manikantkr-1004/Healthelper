@@ -6,5 +6,35 @@
 
 #logo{
     width: 18%;
+    cursor: pointer;
+}
+#health{
+    width: 100%;
+}
+#booking{
+    width: 80%;
+    display: block;
+    margin: auto;
+}
+#progress{
+    width: 100%;
+    height: 50px;
+}
+#app{
+    width: 20%;
 }
 
+#child-doctor{
+    height: 100%;
+    width: 100%;
+    border-radius: 20px;
+}
+#footerlogo{
+    width: 70%;
+}
+.icon:hover {
+    opacity:0.8;
+    cursor: pointer;
+}
+
+/* <Box bg="primary.400" width="100%" pt="40px" pb="40px"> */

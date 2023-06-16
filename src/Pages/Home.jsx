@@ -1,10 +1,11 @@
-import {Flex,Box, Heading, InputRightElement} from "@chakra-ui/react";
+import {Flex,Box, Heading, InputRightElement, Center} from "@chakra-ui/react";
 import {Menu,MenuButton,MenuList,MenuItem,
     Button,useDisclosure,Text,Input,
     InputLeftElement,InputGroup,Card} from '@chakra-ui/react'
 import "../Styles/Home.css";
 import logo from "../Styles/logo.gif"
-import health from "../Styles/health.png"
+import health from "../Styles/health.png";
+import {useNavigate} from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserCircle,faUserMd,faLowVision,faGlobe,faSearch,faMicrophone,
 faAppleAlt,faPlay, faArrowCircleRight,faHeadphones,
@@ -19,7 +20,9 @@ ChartJS.register(
 
 const Patient = <FontAwesomeIcon fade size="sm" icon={faUserCircle} />
 const doctor = <FontAwesomeIcon flip size="sm" icon={faUserMd} />
+const doctoris = <FontAwesomeIcon size="sm" icon={faUserMd} />
 const doctor1 = <FontAwesomeIcon size="lg" icon={faUserMd} />
+const arrowrightis = <FontAwesomeIcon shake size="sm" icon={faArrowCircleRight} />
 const visual = <FontAwesomeIcon size="sm" icon={faLowVision} />
 const globe = <FontAwesomeIcon size="lg" icon={faGlobe} />
 const search = <FontAwesomeIcon size="lg" icon={faSearch} />
@@ -41,6 +44,7 @@ const arrowright = <FontAwesomeIcon size="sm" icon={faArrowRight} />
 function Home(){
     const aboutUsDisclosure = useDisclosure();
     const faqDisclosure = useDisclosure();
+    const navigate = useNavigate()
 
     // Doughnut chart data
     const data = {
@@ -68,12 +72,20 @@ function Home(){
         faqDisclosure.onOpen();
     };
 
+    const handleLogo = ()=>{
+        navigate("/")
+    }
+
+    const handleDoctor = ()=>{
+        navigate("/cart")
+    }
+
     return <div>
         {/* for Navbar Code */}
         <Flex w="100%" align="center" justify="space-between" bg="primary.400" h="70px" p="0px 70px" position="fixed" mt="0px" zIndex="9999" boxShadow="rgba(0, 0, 0, 0.24) 0px 3px 8px" mb="20px">
-            <img id="logo" src={logo} alt="logo"/>
+            <img onClick={handleLogo} id="logo" src={logo} alt="logo"/>
             <Flex justify="space-between" flexBasis="28%" align="center" >
-                <Box cursor="pointer" fontWeight="semibold">Doctors</Box>
+                <Box onClick={handleDoctor} cursor="pointer" fontWeight="semibold">Doctors</Box>
                 <Menu isOpen={aboutUsDisclosure.isOpen} onOpen={aboutUsDisclosure.onOpen} onClose={aboutUsDisclosure.onClose}>
                 <MenuButton as={Button} 
                 variant="ghost" 
@@ -130,7 +142,7 @@ function Home(){
                 <InputRightElement>{micro}</InputRightElement>
                 <Input border="1px solid black" w="100%" size="md" type="text" placeholder='Search doctors, appointment etc.'/>
                 </InputGroup><br />
-                <Button bg="primary.100" textColor="white"
+                <Button onClick={handleDoctor} bg="primary.100" textColor="white"
                 _hover={{bg:"primary.100"}}>Book an appointment</Button>
             </Flex>
             <Flex >
@@ -162,9 +174,13 @@ function Home(){
             </Flex>
             </Flex>
             <Flex display="block" w="80%" m="auto" textAlign="right">
-                <Button bg="transparent" border='2px solid #A57BA3' textColor="#A57BA3">View More {arrowright} </Button>
+                <Button onClick={handleDoctor} bg="transparent" border='2px solid #A57BA3' textColor="#A57BA3">View More {arrowright} </Button>
             </Flex>
             
+        </Box>
+
+        <Box bg="primary.100" width="100%" p="10px 0px" fontWeight="bold" fontSize="20px" textColor="white">
+            <Center><Flex><Text onClick={handleDoctor} cursor="pointer">{doctoris}<span>View All Doctors </span>{arrowrightis}</Text></Flex></Center>
         </Box>
 
         {/* for appointment card */}
@@ -174,7 +190,7 @@ function Home(){
             <Flex width="100%" justify="space-between">
                 <Flex><Text fontWeight="semibold" fontSize="30px">Three steps to make an appointment</Text></Flex>
                 <Flex>
-                <Button bg="primary.100" textColor="white"
+                <Button onClick={handleDoctor} bg="primary.100" textColor="white"
                 _hover={{bg:"primary.100"}}>Book an appointment</Button>
                 </Flex>
             </Flex>
@@ -303,16 +319,16 @@ function Home(){
 
         <Flex width="100%" w="80%" justify="space-between"  m="auto">
 
-            <Flex display="block" w="30%"  textAlign="left" fontWeight="semibold">
-                <img id="footerlogo" src={logo} alt="" />
-                <Text m="3px">Doctors</Text>
+            <Flex display="block" w="30%"  textAlign="left" fontWeight="semibold" cursor="pointer">
+                <img onClick={handleLogo} id="footerlogo" src={logo} alt="" />
+                <Text onClick={handleDoctor} m="3px">Doctors</Text>
                 <Text m="3px">About us</Text>
                 <Text m="3px">FAQ</Text>
                 <Text m="3px">My Help</Text>
 
             </Flex>
 
-            <Flex display="block" w="34%"  textAlign="left" fontWeight="semibold">
+            <Flex display="block" w="34%"  textAlign="left" fontWeight="semibold" cursor="pointer">
             <InputGroup mb="10px">
                 <InputLeftElement>{search}</InputLeftElement>
                 <InputRightElement>{micro}</InputRightElement>
@@ -326,9 +342,9 @@ function Home(){
 
             </Flex>
 
-            <Flex display="block" w="30%" >
+            <Flex display="block" w="30%" cursor="pointer">
 
-            <Button bg="primary.100" textColor="white"
+            <Button onClick={handleDoctor} bg="primary.100" textColor="white"
             _hover={{bg:"primary.100"}} w="70%" mb="10px">Book an appointment</Button>
             <Flex w="70%" m="auto" justify="space-between" mb="10px" pl="10px" pr="10px">
                 <Text>{telegram}</Text>

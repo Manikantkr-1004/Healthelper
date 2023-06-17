@@ -22,8 +22,8 @@ function AllRoutes(){
         <Route path="/checkout" element={<Checkout />}></Route>
         <Route path="/doctorhome" element={<HomeDoctor />}></Route>
         <Route path="/patienthome" element={<HomePatient />}></Route>
-        <Route path="/doctorinfo" element={<SingleDoctor />}></Route>
-        <Route path="/patientinfo" element={<SinglePatient />}></Route>
+        <Route path="/doctorinfo/:id" element={<SingleDoctor />}></Route>
+        <Route path="/patientinfo/:id" element={<SinglePatient />}></Route>
     </Routes>
 }
 

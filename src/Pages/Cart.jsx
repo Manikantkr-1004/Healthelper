@@ -185,6 +185,10 @@ function Cart(){
         })
       }
 
+      const handleNavigate = (id)=>{
+        navigate(`/doctorinfo/${id}`)
+      }
+
     // console.log(cartdata);
 
     
@@ -331,7 +335,7 @@ function Cart(){
                 </CardBody>
                 <CardFooter p="0">
                     <ButtonGroup spacing='2' m="auto" w="95%" mb="5px" justifyContent="space-between">
-                    <Button variant='solid' bg="transparent" border="2px solid #A57BA3" textColor="primary.100" w="47%">
+                    <Button onClick={()=>handleNavigate(item.id)} variant='solid' bg="transparent" border="2px solid #A57BA3" textColor="primary.100" w="47%">
                         Read More {arrowright}
                     </Button>
                     <Button onClick={check.includes(item.id) ? onOpen : ()=>handleCart(item.id)} variant='solid' bg="primary.100" textColor="white" w="47%" _hover={{bg:"primary.300"}}                                                       >
@@ -347,6 +351,29 @@ function Cart(){
         </Box>
 
 
+
+        </div>
+
+        <div style={{width:"100%",backgroundColor:"#E0E9F6"}}>
+            <Box w="80%" m="auto">
+                <Text fontWeight="semibold" fontSize="30px">How can I use it?</Text>
+            </Box>
+            <Box w="80%" m="auto" mt="20px" pb="40px">
+            <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 3, "2xl": 3 }} spacing={5} justifyContent="space-between">
+                <Box>
+                    <Text mb="5px" textAlign="left" fontWeight="bold">I've booked an appointment, how to answer the call?</Text>
+                    <img style={{borderRadius:"5px"}} src="https://img.freepik.com/free-vector/flat-design-customer-support-concept-illustrated_52683-59570.jpg?w=740&t=st=1686992300~exp=1686992900~hmac=b4455b864a4c0714b2daaeb4d3e939bb19cc88c627e594f9150e4b9b54031d44" alt="" />
+                </Box>
+                <Box>
+                    <Text mb="5px" textAlign="left" fontWeight="bold">How to complete my personal information at my cabinet?</Text>
+                    <img style={{borderRadius:"5px"}} src="https://img.freepik.com/free-vector/telecommuting-concept_52683-37090.jpg?w=740&t=st=1686992221~exp=1686992821~hmac=8d9fc48e30c2774f4b564aa226623ea2ddb7ecbc674e6c903ba173b06b860cbd" alt="" />
+                </Box>
+                <Box>
+                    <Text mb="5px" textAlign="left" fontWeight="bold">What can I do in my personal cabinet, Here or There or anywhere?</Text>
+                    <img style={{borderRadius:"5px"}} src="https://img.freepik.com/free-vector/business-leaders-solve-problems-lead-organization-overcome-business-obstacles-achieve-planned-business-goals_1150-65818.jpg?size=626&ext=jpg&ga=GA1.2.1345813682.1676725084&semt=sph" alt="" />
+                </Box>
+            </SimpleGrid>
+            </Box>
 
         </div>
 
@@ -385,6 +412,10 @@ function Cart(){
                                 </Flex>
             
                                 <Box w="100%" bg="secondary.100" mt="15px" mb="15px">
+                                <Flex w="95%" justifyContent="space-between" m="auto" >
+                                    <Text fontWeight="bold">Timing</Text>
+                                    <Text textColor="blue" fontWeight="bold">30 Min</Text>
+                                </Flex>
                                 <Flex w="95%" justifyContent="space-between" m="auto" fontWeight="bold">
                                     <Text fontWeight="semibold">Qualification</Text>
                                     <Text >{item.qualification}</Text>

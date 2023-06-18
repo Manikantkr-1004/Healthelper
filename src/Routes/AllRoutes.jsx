@@ -10,18 +10,19 @@ import HomeDoctor from "../Pages/HomeDoctor";
 import HomePatient from "../Pages/HomePatient";
 import SingleDoctor from "../Pages/SingleDoctor";
 import SinglePatient from "../Pages/SinglePatient";
+import PrivateRoutes from "./PrivateRoutes";
 
 function AllRoutes(){
     return <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/signup" element={<Signup />}></Route>
-        <Route path="/order" element={<Order />}></Route>
+        <Route path="/order" element={<PrivateRoutes><Order /></PrivateRoutes>}></Route>
         <Route path="*" element={<NotFound />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
-        <Route path="/checkout" element={<Checkout />}></Route>
-        <Route path="/doctorhome" element={<HomeDoctor />}></Route>
-        <Route path="/patienthome" element={<HomePatient />}></Route>
+        <Route path="/checkout" element={<PrivateRoutes><Checkout /></PrivateRoutes>}></Route>
+        <Route path="/doctorhome" element={<PrivateRoutes><HomeDoctor /></PrivateRoutes>}></Route>
+        <Route path="/patienthome" element={<PrivateRoutes><HomePatient /></PrivateRoutes>}></Route>
         <Route path="/doctorinfo/:id" element={<SingleDoctor />}></Route>
         <Route path="/patientinfo/:id" element={<SinglePatient />}></Route>
     </Routes>

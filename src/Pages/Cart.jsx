@@ -2,7 +2,7 @@ import {Flex,
     Box, Heading, InputRightElement, Center, Select, SimpleGrid} from "@chakra-ui/react";
 import {Menu,MenuButton,MenuList,MenuItem,
     Button,useDisclosure,Text,Input,Skeleton,useToast,
-    InputLeftElement,InputGroup,Card} from '@chakra-ui/react'
+    InputLeftElement,InputGroup,Card,Tooltip } from '@chakra-ui/react'
 import { CardHeader, CardBody, CardFooter,Image,Stack,Divider,ButtonGroup } from '@chakra-ui/react'
 import "../Styles/Home.css";
 import logo from "../Styles/logo.gif"
@@ -12,7 +12,7 @@ import { faUserCircle,faUserMd,faLowVision,faGlobe,faSearch,faMicrophone,
 faAppleAlt,faPlay,faHeadphones,
 faPhone,faEnvelope,faComments,faArrowCircleRight,faCartPlus,faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { faTelegram, faYoutube, faInstagram, faFacebook } from "@fortawesome/free-brands-svg-icons";
-import {useState,useEffect} from "react";
+import {useState,useEffect, useContext} from "react";
 import axios from "axios";
 import Loading from "./Loading";
 import {
@@ -24,6 +24,7 @@ import {
     DrawerContent,
     DrawerCloseButton,
   } from '@chakra-ui/react'
+import { AuthContext } from "../AuthContextProvider/AuthContextProvider";
 
 const Patient = <FontAwesomeIcon fade size="sm" icon={faUserCircle} />
 const doctor = <FontAwesomeIcon flip size="sm" icon={faUserMd} />
@@ -48,6 +49,8 @@ const procees = <FontAwesomeIcon shake size="lg" icon={faArrowRight} />
 
 function Cart(){
 
+    const {userd,loginUser,logout,handleClickCart,cartDisclosure} = useContext(AuthContext);
+
     const aboutUsDisclosure = useDisclosure();
     const faqDisclosure = useDisclosure();
     const navigate = useNavigate();
@@ -55,6 +58,7 @@ function Cart(){
     const [cartdata,setCartData] = useState([]);
     const [check, setCheck] = useState([]);
     const [loading,setLoading] = useState(false);
+    const [deloading,setDeloading] = useState(false);
     const [priceis,setPrice] = useState("");
     const [degree,setDegree] = useState("");
     const [job,setJob] = useState("");
@@ -124,9 +128,7 @@ function Cart(){
     }
 
     useEffect(()=>{
-        if(check.length>0){
             handleGet()
-        }
     },[check])
 
     function handleCart(id) {
@@ -168,6 +170,7 @@ function Cart(){
       }
 
       const handleDel = (itemId) => {
+        setDeloading(true);
         handleDeleting(itemId)
         const updatedCheck = check.filter((id) => id !== itemId);
         setCheck(updatedCheck);
@@ -177,7 +180,8 @@ function Cart(){
         axios.delete(`https://reactapi23.onrender.com/Cart/${id}`)
         .then(function(res){
             // setCartData(res.data);
-            handleGet()
+            handleGet();
+            setDeloading(false);
             
             
         }).catch(function(error){
@@ -189,11 +193,19 @@ function Cart(){
         navigate(`/doctorinfo/${id}`)
       }
 
+      const checkingTotal = ()=>{
+        let total = 0;
+        cartdata.map((item)=>(
+            total+= item.price
+        ))
+        return total;
+      }
+
     // console.log(cartdata);
 
     
     
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    // const { isOpen, onOpen, onClose } = useDisclosure();
 
 
     return <div>
@@ -213,10 +225,12 @@ function Cart(){
                     Profile
                 </MenuButton>
                 <MenuList onMouseEnter={aboutUsDisclosure.onOpen} onMouseLeave={aboutUsDisclosure.onClose}>
-                    <MenuItem>Dashboard</MenuItem>
-                    <MenuItem>Signup/Login</MenuItem>
-                    <MenuItem>My Cart</MenuItem>
+                    {userd.isAuth && <MenuItem fontWeight="bold">Hlo, {userd.name}</MenuItem>}
+                    <MenuItem onClick={()=> navigate("/patienthome")}>Dashboard</MenuItem>
+                    <MenuItem onClick={()=>navigate("/cart")}>My Cart</MenuItem>
                     <MenuItem>My Orders</MenuItem>
+                    {userd.isAuth ? <MenuItem onClick={()=> logout()}>Logout</MenuItem> : 
+                    <MenuItem onClick={()=> navigate("/signup")}>Signup/Login</MenuItem>}
                 </MenuList>
                 </Menu>
                 
@@ -338,9 +352,16 @@ function Cart(){
                     <Button onClick={()=>handleNavigate(item.id)} variant='solid' bg="transparent" border="2px solid #A57BA3" textColor="primary.100" w="47%">
                         Read More {arrowright}
                     </Button>
-                    <Button onClick={check.includes(item.id) ? onOpen : ()=>handleCart(item.id)} variant='solid' bg="primary.100" textColor="white" w="47%" _hover={{bg:"primary.300"}}                                                       >
+                    {
+                        userd.isAuth ? <Button onClick={check.includes(item.id) ? ()=>handleClickCart() : ()=>handleCart(item.id)} variant='solid' bg="primary.100" textColor="white" w="47%" _hover={{bg:"primary.300"}}                                                       >
                         {check.includes(item.id) ? <>Go to<span style={{marginLeft:"5px"}}>{cart2}</span></> : 'Book'}
-                    </Button>
+                    </Button> : 
+                        <Tooltip label='Please Create/Login Account' hasArrow arrowSize={15} placement='top'>
+                            <Button isDisabled onClick={check.includes(item.id) ? ()=>handleClickCart() : ()=>handleCart(item.id)} variant='solid' bg="primary.100" textColor="white" w="47%" _hover={{bg:"primary.300"}}                                                       >
+                            {check.includes(item.id) ? <>Go to<span style={{marginLeft:"5px"}}>{cart2}</span></> : 'Book'}
+                            </Button>
+                        </Tooltip>
+                    }
                     </ButtonGroup>
                 </CardFooter>
                 </Card>
@@ -378,15 +399,17 @@ function Cart(){
         </div>
 
         <Drawer
-        isOpen={isOpen}
+        isOpen={cartDisclosure.isOpen}
         placement='right'
-        onClose={onClose}
+        onClose={cartDisclosure.onClose}
         zIndex="9999"
       >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Your Cart Items{carticon}</DrawerHeader>
+          <DrawerHeader>Your Cart Items{carticon}
+          {cartdata.length>0 && <Text textColor="primary.100">Total: ₹{checkingTotal()}</Text>}
+          </DrawerHeader>
 
           <DrawerBody>
             {
@@ -434,9 +457,12 @@ function Cart(){
                             </CardBody>
                             <CardFooter p="0">
                                 <ButtonGroup spacing='2' m="auto" w="95%" mb="5px" justifyContent="space-between">
-                                <Button onClick={() => handleDel(item.id)} variant='solid' bg="transparent" border="2px solid #A57BA3" textColor="primary.100" w="100%">
-                                    Remove To Cart
-                                </Button>
+                                {
+                                    deloading ? <Button w="100%" bg="primary.100" isLoading loadingText='Removing...' colorScheme='primary.100'>Removing...</Button> : 
+                                    <Button onClick={() => handleDel(item.id)} variant='solid' bg="transparent" border="2px solid #A57BA3" textColor="primary.100" w="100%">
+                                        Remove To Cart
+                                    </Button>
+                                }
                                 </ButtonGroup>
                             </CardFooter>
                             </Card>
@@ -447,10 +473,10 @@ function Cart(){
           </DrawerBody>
 
           <DrawerFooter>
-            <Button variant='outline' mr={3} onClick={onClose}>
+            <Button variant='outline' mr={3} onClick={cartDisclosure.onClose}>
               Close
             </Button>
-            <Button isDisabled={cartdata.length===0} _hover={{bg:"primary.300"}} bg="primary.100" textColor="white">Proceed to Checkout{procees}</Button>
+            <Button onClick={()=> navigate("/checkout")} isDisabled={cartdata.length===0} _hover={{bg:"primary.300"}} bg="primary.100" textColor="white">Proceed to Checkout{procees}</Button>
           </DrawerFooter>
         </DrawerContent>
         </Drawer>

@@ -14,6 +14,8 @@ import { faTelegram, faYoutube, faInstagram, faFacebook } from "@fortawesome/fre
 
 import { Doughnut } from "react-chartjs-2";
 import {Chart as ChartJS, ArcElement, Tooltip, Legend} from "chart.js";
+import { useContext } from "react";
+import { AuthContext } from "../AuthContextProvider/AuthContextProvider";
 ChartJS.register(
     ArcElement, Tooltip, Legend
 )
@@ -42,6 +44,8 @@ const arrowright = <FontAwesomeIcon size="sm" icon={faArrowRight} />
 
 
 function Home(){
+    const {userd,loginUser,logout,handleClickCart,cartDisclosure} = useContext(AuthContext);
+
     const aboutUsDisclosure = useDisclosure();
     const faqDisclosure = useDisclosure();
     const navigate = useNavigate()
@@ -96,10 +100,12 @@ function Home(){
                     Profile
                 </MenuButton>
                 <MenuList onMouseEnter={aboutUsDisclosure.onOpen} onMouseLeave={aboutUsDisclosure.onClose}>
-                    <MenuItem>Dashboard</MenuItem>
-                    <MenuItem>Signup/Login</MenuItem>
-                    <MenuItem>My Cart</MenuItem>
+                    {userd.isAuth && <MenuItem fontWeight="bold">Hlo, {userd.name}</MenuItem>}
+                    <MenuItem onClick={()=> navigate("/patienthome")}>Dashboard</MenuItem>
+                    <MenuItem onClick={()=>navigate("/cart")}>My Cart</MenuItem>
                     <MenuItem>My Orders</MenuItem>
+                    {userd.isAuth ? <MenuItem onClick={()=> logout()}>Logout</MenuItem> : 
+                    <MenuItem onClick={()=> navigate("/signup")}>Signup/Login</MenuItem>}
                 </MenuList>
                 </Menu>
                 

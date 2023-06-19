@@ -9,7 +9,7 @@ import {useNavigate} from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserCircle,faUserMd,faLowVision,faGlobe,faSearch,faMicrophone,
 faAppleAlt,faPlay, faArrowCircleRight,faHeadphones,
-faPhone,faEnvelope,faComments, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+faPhone,faEnvelope,faComments, faArrowRight, faHome, faCartPlus, faShoppingBag, faSignOut, faSignIn } from '@fortawesome/free-solid-svg-icons';
 import { faTelegram, faYoutube, faInstagram, faFacebook } from "@fortawesome/free-brands-svg-icons";
 
 import { Doughnut } from "react-chartjs-2";
@@ -41,6 +41,12 @@ const youtube = <FontAwesomeIcon size="xl" icon={faYoutube} className="icon" />;
 const instagram = <FontAwesomeIcon size="xl" icon={faInstagram} className="icon" />;
 const facebook = <FontAwesomeIcon size="xl" icon={faFacebook} className="icon" />;
 const arrowright = <FontAwesomeIcon size="sm" icon={faArrowRight} />
+const home = <FontAwesomeIcon size="sm" icon={faHome} />
+const cart = <FontAwesomeIcon size="sm" icon={faCartPlus} />
+const order = <FontAwesomeIcon size="sm" icon={faShoppingBag} />
+const log = <FontAwesomeIcon size="sm" icon={faSignOut} />
+const login = <FontAwesomeIcon size="sm" icon={faSignIn} />
+
 
 
 function Home(){
@@ -100,12 +106,13 @@ function Home(){
                     Profile
                 </MenuButton>
                 <MenuList onMouseEnter={aboutUsDisclosure.onOpen} onMouseLeave={aboutUsDisclosure.onClose}>
-                    {userd.isAuth && <MenuItem fontWeight="bold">Hlo, {userd.name}</MenuItem>}
-                    <MenuItem onClick={()=> navigate("/patienthome")}>Dashboard</MenuItem>
-                    <MenuItem onClick={()=>navigate("/cart")}>My Cart</MenuItem>
-                    <MenuItem>My Orders</MenuItem>
-                    {userd.isAuth ? <MenuItem onClick={()=> logout()}>Logout</MenuItem> : 
-                    <MenuItem onClick={()=> navigate("/signup")}>Signup/Login</MenuItem>}
+                    {userd.isAuth && <MenuItem fontWeight="bold" >Hlo, {userd.name}</MenuItem>}
+                    <MenuItem onClick={()=> navigate("/patienthome")}>{home} Dashboard</MenuItem>
+                    {userd.isAuth && <MenuItem fontWeight="semibold" onClick={()=>navigate(`/patientinfo/${userd.id}`)}>{Patient} See Profile</MenuItem>}
+                    <MenuItem onClick={()=>navigate("/cart")}>{cart} My Cart</MenuItem>
+                    <MenuItem>{order} My Orders</MenuItem>
+                    {userd.isAuth ? <MenuItem onClick={()=> logout()}>{log} Logout</MenuItem> : 
+                    <MenuItem onClick={()=> navigate("/signup")}>{login} Signup/Login</MenuItem>}
                 </MenuList>
                 </Menu>
                 

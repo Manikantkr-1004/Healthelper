@@ -6,25 +6,17 @@ import {Menu,MenuButton,MenuList,MenuItem,
 import { CardHeader, CardBody, CardFooter,Image,Stack,Divider,ButtonGroup } from '@chakra-ui/react'
 import "../Styles/Home.css";
 import logo from "../Styles/logo.gif"
-import {useNavigate} from "react-router-dom"
+import {useNavigate, useSearchParams} from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserCircle,faUserMd,faLowVision,faGlobe,faSearch,faMicrophone,
 faAppleAlt,faPlay,faHeadphones,
-faPhone,faEnvelope,faComments,faArrowCircleRight,faCartPlus,faArrowRight, faHome, faShoppingBag, faSignOut, faSignIn } from '@fortawesome/free-solid-svg-icons';
+faPhone,faEnvelope,faComments,faArrowCircleRight,faCartPlus,faArrowRight, faHome, faShoppingBag, faSignOut, faSignIn, faBars } from '@fortawesome/free-solid-svg-icons';
 import { faTelegram, faYoutube, faInstagram, faFacebook } from "@fortawesome/free-brands-svg-icons";
 import {useState,useEffect, useContext} from "react";
 import axios from "axios";
 import Loading from "./Loading";
-import {
-    Drawer,
-    DrawerBody,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerOverlay,
-    DrawerContent,
-    DrawerCloseButton,
-  } from '@chakra-ui/react'
 import { AuthContext } from "../AuthContextProvider/AuthContextProvider";
+import { Helmet } from "react-helmet";
 
 const Patient = <FontAwesomeIcon fade size="sm" icon={faUserCircle} />
 const doctor = <FontAwesomeIcon flip size="sm" icon={faUserMd} />
@@ -43,36 +35,77 @@ const youtube = <FontAwesomeIcon size="xl" icon={faYoutube} className="icon" />;
 const instagram = <FontAwesomeIcon size="xl" icon={faInstagram} className="icon" />;
 const facebook = <FontAwesomeIcon size="xl" icon={faFacebook} className="icon" />;
 const arrowright = <FontAwesomeIcon fade size="sm" icon={faArrowCircleRight} />
-const carticon = <FontAwesomeIcon beat size="sm" icon={faCartPlus} />
 const cart2 = <FontAwesomeIcon size="xs" icon={faCartPlus} />
-const procees = <FontAwesomeIcon shake size="lg" icon={faArrowRight} />
 const home = <FontAwesomeIcon size="sm" icon={faHome} />
 const cart = <FontAwesomeIcon size="sm" icon={faCartPlus} />
 const order = <FontAwesomeIcon size="sm" icon={faShoppingBag} />
 const log = <FontAwesomeIcon size="sm" icon={faSignOut} />
 const login = <FontAwesomeIcon size="sm" icon={faSignIn} />
+const bars = <FontAwesomeIcon size="lg" icon={faBars} />
 
 function Cart(){
 
-    const {userd,loginUser,logout,handleClickCart,cartDisclosure} = useContext(AuthContext);
+    const {userd,loginUser,count,setCount,logout,handleClickCart,cartDisclosure,handleMenuBar,MenuDisclosure} = useContext(AuthContext);
 
     const aboutUsDisclosure = useDisclosure();
     const faqDisclosure = useDisclosure();
     const navigate = useNavigate();
-    const [data,setData] = useState([]);
+    const [searchParams,setSearchParams] = useSearchParams();
     const [cartdata,setCartData] = useState([]);
-    const [check, setCheck] = useState([]);
+    const [data,setData] = useState([]);
+    let localcheck = localStorage.getItem("health_check");
+    const [check, setCheck] = useState(localcheck? JSON.parse(localcheck): []);
     const [loading,setLoading] = useState(false);
     const [deloading,setDeloading] = useState(false);
-    const [priceis,setPrice] = useState("");
-    const [degree,setDegree] = useState("");
-    const [job,setJob] = useState("");
-    const [name,setName] = useState("");
+
+    const [priceis,setPrice] = useState(searchParams.get("price") || "");
+    const [degree,setDegree] = useState(searchParams.get("qualification") || "");
+    const [job,setJob] = useState(searchParams.get("occupation") || "");
+    const [name,setName] = useState(searchParams.get("q") || "");
+
     const toast = useToast();
 
     useEffect(()=>{
         fetchingData(priceis,degree,job,name);
-    },[priceis,degree,job,name])
+        let localcheck = localStorage.getItem("health_check");
+        setCheck(localcheck? JSON.parse(localcheck) : []);
+        let params = {};
+
+        if(name!==""){
+            params.q = name;
+        }
+        if(priceis!==""){
+            params.price = priceis;
+        }
+        if(degree!==""){
+            params.qualification = degree;
+        }
+        if(job!==""){
+            params.occupation = job;
+        }
+        setSearchParams(params)
+        document.body.style.background = "#E0E9F6"
+    },[priceis,degree,job,name,count]);
+
+    const handleVoiceSearch = () => {
+        if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = "en-US"; // Set the language for speech recognition
+        
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                setName(speechResult);
+            };
+        
+            recognition.start();
+        } else {
+            console.log("Speech recognition not supported on this browser.");
+            // You might want to provide a user-friendly message or alternative search method
+        }
+    };
 
     function fetchingData(priceis,degree,job,name){
         setLoading(true);
@@ -134,16 +167,30 @@ function Cart(){
 
     useEffect(()=>{
             handleGet()
-    },[check])
+    },[count])
 
-    function handleCart(id) {
-        setCheck([...check,id])
-        handlePost(id)
+    function handleGet(){
+        axios.get("https://reactapi23.onrender.com/Cart")
+        .then(function(res){
+            // setCartData(res.data);
+            setCartData(res.data);
+            
+            
+        }).catch(function(error){
+            console.log(error)
+        })
+      }
+
+    function handleCart(itemid) {
+        let updated = [...check,itemid];
+        setCheck(updated);
+        localStorage.setItem("health_check",JSON.stringify(updated));
+        handlePost(itemid)
     }
 
     const handlePost = (id) => {
         const item = data.find((item) => item.id === id);
-    
+
         axios
           .post('https://reactapi23.onrender.com/Cart', item)
           .then(function (res) {
@@ -156,54 +203,15 @@ function Cart(){
                 duration: 2000,
                 isClosable: true
               });
+              setCount((prev)=> prev+1);
           })
           .catch(function (error) {
             console.log(error);
           });
       };
 
-      function handleGet(){
-        axios.get("https://reactapi23.onrender.com/Cart")
-        .then(function(res){
-            // setCartData(res.data);
-            setCartData(res.data);
-            
-            
-        }).catch(function(error){
-            console.log(error)
-        })
-      }
-
-      const handleDel = (itemId) => {
-        setDeloading(true);
-        handleDeleting(itemId)
-        const updatedCheck = check.filter((id) => id !== itemId);
-        setCheck(updatedCheck);
-      };
-
-      function handleDeleting(id){
-        axios.delete(`https://reactapi23.onrender.com/Cart/${id}`)
-        .then(function(res){
-            // setCartData(res.data);
-            handleGet();
-            setDeloading(false);
-            
-            
-        }).catch(function(error){
-            console.log(error)
-        })
-      }
-
       const handleNavigate = (id)=>{
         navigate(`/doctorinfo/${id}`)
-      }
-
-      const checkingTotal = ()=>{
-        let total = 0;
-        cartdata.map((item)=>(
-            total+= item.price
-        ))
-        return total;
       }
 
     // console.log(cartdata);
@@ -214,59 +222,9 @@ function Cart(){
 
 
     return <div>
-
-        {/* for Navbar Code */}
-        <Flex w="100%" align="center" justify="space-between" bg="primary.400" h="70px" p="0px 70px" position="fixed" top="0" zIndex="999" boxShadow="rgba(0, 0, 0, 0.24) 0px 3px 8px" mb="20px">
-            <img onClick={handleLogo} id="logo" src={logo} alt="logo"/>
-            <Flex justify="space-between" flexBasis="28%" align="center" >
-                <Box onClick={handleDoctor} cursor="pointer" fontWeight="semibold">Doctors</Box>
-                <Menu isOpen={aboutUsDisclosure.isOpen} onOpen={aboutUsDisclosure.onOpen} onClose={aboutUsDisclosure.onClose}>
-                <MenuButton as={Button} 
-                variant="ghost" 
-                _hover={{bg:"primary.400",border:"1px solid black"}} 
-                _active={{bg:"secondary.100"}} 
-                onMouseEnter={handleMouseEnter}
-                >
-                    Profile
-                </MenuButton>
-                <MenuList onMouseEnter={aboutUsDisclosure.onOpen} onMouseLeave={aboutUsDisclosure.onClose}>
-                    {userd.isAuth && <MenuItem fontWeight="bold" >Hlo, {userd.name}</MenuItem>}
-                    <MenuItem onClick={()=> navigate("/patienthome")}>{home} Dashboard</MenuItem>
-                    {userd.isAuth && <MenuItem fontWeight="semibold" onClick={()=>navigate(`/patientinfo/${userd.id}`)}>{Patient} See Profile</MenuItem>}
-                    <MenuItem onClick={()=>handleClickCart()}>{cart} My Cart</MenuItem>
-                    <MenuItem>{order} My Orders</MenuItem>
-                    {userd.isAuth ? <MenuItem onClick={()=> logout()}>{log} Logout</MenuItem> : 
-                    <MenuItem onClick={()=> navigate("/signup")}>{login} Signup/Login</MenuItem>}
-                </MenuList>
-                </Menu>
-                
-                <Menu isOpen={faqDisclosure.isOpen} onOpen={faqDisclosure.onOpen} onClose={faqDisclosure.onClose}>
-                <MenuButton as={Button} 
-                variant="ghost" 
-                _hover={{bg:"primary.400",border:"1px solid black"}} 
-                _active={{bg:"secondary.100"}} 
-                onMouseEnter={handleMOuse}
-                >
-                    FAQ
-                </MenuButton>
-                <MenuList onMouseEnter={faqDisclosure.onOpen} onMouseLeave={faqDisclosure.onClose}>
-                    <MenuItem>Address</MenuItem>
-                    <MenuItem>Doctors</MenuItem>
-                    <MenuItem>Fees</MenuItem>
-                    <MenuItem>Facility</MenuItem>
-                    <MenuItem>Digital</MenuItem>
-                </MenuList>
-                </Menu>
-                
-                <Box cursor="pointer" fontWeight="semibold">My Help</Box>
-            </Flex>
-            <Flex justify="space-between" flexBasis="21%" >
-            <Box cursor="pointer" id="findoctor" border="2px solid black" p="7px 5px" borderRadius="10px" fontWeight="semibold">{doctor} I'm a Doctor</Box>
-            <Box cursor="pointer" id="findmedical" border="2px solid black" p="7px 5px" borderRadius="10px" fontWeight="semibold">{Patient} I'm a Patient</Box>
-            </Flex>
-            <Box cursor="pointer" id="findoctor" border="2px solid black" p="7px 5px" borderRadius="10px" fontWeight="semibold">{visual} Visual Disabilities</Box>
-            <Box cursor="pointer" >{globe}</Box>
-        </Flex>
+        <Helmet>
+            <title>Cart | Healthelper</title>
+        </Helmet>
 
         {/* For Body Part */}
         <div style={{width:"100%",backgroundColor:"#E0E9F6",paddingTop:"120px",paddingBottom:"50px"}}>
@@ -274,8 +232,8 @@ function Cart(){
         <Box w="80%" m="auto" mb="10px">
             <InputGroup>
                 <InputLeftElement>{search}</InputLeftElement>
-                <InputRightElement>{micro}</InputRightElement>
-                <Input value={name} onChange={(e)=>setName(e.target.value)} border="1px solid black" w="100%" size="md" type="text" placeholder='Search doctors by Name'/>
+                <InputRightElement onClick={handleVoiceSearch} _hover={{cursor:"pointer"}}>{micro}</InputRightElement>
+                <Input _focus={{boxShadow:"0 0 5pt 0.5pt #4d4d4d inset"}} boxShadow="0 0 5pt 0.5pt #202020 inset" value={name} onChange={(e)=>setName(e.target.value)} border="1px solid black" w="100%" size="md" type="text" placeholder='Search doctors by Name'/>
             </InputGroup>
         </Box>
 
@@ -360,11 +318,11 @@ function Cart(){
                     </Button>
                     {
                         userd.isAuth ? <Button onClick={check.includes(item.id) ? ()=>handleClickCart() : ()=>handleCart(item.id)} variant='solid' bg="primary.100" textColor="white" w="47%" _hover={{bg:"primary.300"}}                                                       >
-                        {check.includes(item.id) ? <>Go to<span style={{marginLeft:"5px"}}>{cart2}</span></> : 'Book'}
+                        {check.includes(item.id) ? <>Go to<span style={{marginLeft:"5px"}}>{cart2}</span></> : userd.isAuth?"Book":"First Login"}
                     </Button> : 
-                        <Tooltip label='Please Create/Login Account' hasArrow arrowSize={15} placement='top'>
+                        <Tooltip label='Please Create/Login Account' hasArrow arrowSize={10} placement='top'>
                             <Button isDisabled onClick={check.includes(item.id) ? ()=>handleClickCart() : ()=>handleCart(item.id)} variant='solid' bg="primary.100" textColor="white" w="47%" _hover={{bg:"primary.300"}}                                                       >
-                            {check.includes(item.id) ? <>Go to<span style={{marginLeft:"5px"}}>{cart2}</span></> : 'Book'}
+                            {check.includes(item.id) ? <>Go to<span style={{marginLeft:"5px"}}>{cart2}</span></> : userd.isAuth?"Book":"First Login"}
                             </Button>
                         </Tooltip>
                     }
@@ -404,98 +362,16 @@ function Cart(){
 
         </div>
 
-        <Drawer
-        isOpen={cartDisclosure.isOpen}
-        placement='right'
-        onClose={cartDisclosure.onClose}
-        zIndex="9999"
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Your Cart Items{carticon}
-          {cartdata.length>0 && <Text textColor="primary.100">Total: ₹{checkingTotal()}</Text>}
-          </DrawerHeader>
-
-          <DrawerBody>
-            {
-                cartdata.length===0 ? <Box w="100%" p="0px" m="0px"> <img style={{width:"100%", display:"block"}} src="https://img.freepik.com/premium-vector/shopping-cart-with-cross-mark-wireless-paymant-icon-shopping-bag-failure-paymant-sign-online-shopping-vector_662353-912.jpg" alt="" />
-                <Text textAlign="center" fontWeight="bold" fontSize="25px" >Your Cart is Empty...</Text></Box> : 
-                <Box w="100%" p="0px" m="0px">
-                    {
-                        cartdata.map((item)=>(
-                            <Card p="0px" bg="secondary.200" key={item.id} mb="20px">
-                            <CardBody p="0" >
-                                <Image
-                                src={item.image}
-                                alt={item.name}
-                                borderRadius='lg'
-                                />
-                                <Flex w="95%" justifyContent="space-between" m="auto" fontWeight="bold">
-                                    <Text>{item.name}</Text>
-                                    <Text>{item.rating.rate}⭐</Text>
-                                </Flex>
-                                <Flex w="95%" justifyContent="space-between" m="auto" fontWeight="bold">
-                                    <Text>{item.Occupation}</Text>
-                                    <Text fontWeight="semibold">{item.rating.review} reviews</Text>
-                                </Flex>
-            
-                                <Box w="100%" bg="secondary.100" mt="15px" mb="15px">
-                                <Flex w="95%" justifyContent="space-between" m="auto" >
-                                    <Text fontWeight="bold">Timing</Text>
-                                    <Text textColor="blue" fontWeight="bold">30 Min</Text>
-                                </Flex>
-                                <Flex w="95%" justifyContent="space-between" m="auto" fontWeight="bold">
-                                    <Text fontWeight="semibold">Qualification</Text>
-                                    <Text >{item.qualification}</Text>
-                                </Flex>
-                                <Flex w="95%" justifyContent="space-between" m="auto" >
-                                    <Text fontWeight="semibold">Experience</Text>
-                                    <Text fontWeight="semibold">20 Years</Text>
-                                </Flex>
-                                <Flex w="95%" justifyContent="space-between" m="auto" fontWeight="bold">
-                                    <Text fontWeight="semibold">Price</Text>
-                                    <Text >{item.price} ₹</Text>
-                                </Flex>
-            
-                                </Box>
-            
-                            </CardBody>
-                            <CardFooter p="0">
-                                <ButtonGroup spacing='2' m="auto" w="95%" mb="5px" justifyContent="space-between">
-                                {
-                                    deloading ? <Button w="100%" bg="primary.100" isLoading loadingText='Removing...' colorScheme='primary.100'>Removing...</Button> : 
-                                    <Button onClick={() => handleDel(item.id)} variant='solid' bg="transparent" border="2px solid #A57BA3" textColor="primary.100" w="100%">
-                                        Remove To Cart
-                                    </Button>
-                                }
-                                </ButtonGroup>
-                            </CardFooter>
-                            </Card>
-                        ))
-                    }
-                </Box>
-            }
-          </DrawerBody>
-
-          <DrawerFooter>
-            <Button variant='outline' mr={3} onClick={cartDisclosure.onClose}>
-              Close
-            </Button>
-            <Button onClick={()=> navigate("/checkout")} isDisabled={cartdata.length===0} _hover={{bg:"primary.300"}} bg="primary.100" textColor="white">Proceed to Checkout{procees}</Button>
-          </DrawerFooter>
-        </DrawerContent>
-        </Drawer>
-
 
 
         {/* Footer Bar lastly */}
 
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 250"><path fill="#AEBDD4" fill-opacity="1" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,170.7C840,181,960,235,1080,240C1200,245,1320,203,1380,181.3L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>
         <Box bg="primary.400" width="100%" pt="40px" pb="20px">
 
-        <Flex width="100%" w="80%" justify="space-between"  m="auto">
+        <Flex width="100%" w="80%" justify="space-between"  m="auto" direction={{base:"column", sm: "column", md: "column", lg: "row", xl: "row", "2xl": "row" }}>
 
-            <Flex display="block" w="30%"  textAlign="left" fontWeight="semibold" cursor="pointer">
+            <Flex display="block" w={{base:"100%", sm: "100%", md: "100%", lg: "30%", xl: "30%", "2xl": "30%" }} mb={{base:"20px", sm: "20px", md: "20px", lg: "0px", xl: "0px", "2xl": "0px" }}  textAlign="left" fontWeight="semibold" cursor="pointer">
                 <img onClick={handleLogo} id="footerlogo" src={logo} alt="" />
                 <Text onClick={handleDoctor} m="3px">Doctors</Text>
                 <Text m="3px">About us</Text>
@@ -504,7 +380,7 @@ function Cart(){
 
             </Flex>
 
-            <Flex display="block" w="34%"  textAlign="left" fontWeight="semibold" cursor="pointer">
+            <Flex display="block" w={{base:"100%", sm: "100%", md: "100%", lg: "34%", xl: "34%", "2xl": "34%" }} mb={{base:"20px", sm: "20px", md: "20px", lg: "0px", xl: "0px", "2xl": "0px" }}  textAlign="left" fontWeight="semibold" cursor="pointer">
             <InputGroup mb="10px">
                 <InputLeftElement>{search}</InputLeftElement>
                 <InputRightElement>{micro}</InputRightElement>
@@ -518,18 +394,18 @@ function Cart(){
 
             </Flex>
 
-            <Flex display="block" w="30%" cursor="pointer">
+            <Flex display="block" w={{base:"100%", sm: "100%", md: "100%", lg: "30%", xl: "30%", "2xl": "30%" }} mb={{base:"20px", sm: "20px", md: "20px", lg: "0px", xl: "0px", "2xl": "0px" }} cursor="pointer">
 
             <Button onClick={handleDoctor} bg="primary.100" textColor="white"
-            _hover={{bg:"primary.100"}} w="70%" mb="10px">Book an appointment</Button>
-            <Flex w="70%" m="auto" justify="space-between" mb="10px" pl="10px" pr="10px">
+            _hover={{bg:"primary.100"}} w="80%" mb="10px">Book an appointment</Button>
+            <Flex w="80%" m="auto" justify="space-between" mb="10px" pl="10px" pr="10px">
                 <Text>{telegram}</Text>
                 <Text>{youtube}</Text>
                 <Text>{instagram}</Text>
                 <Text>{facebook}</Text>
             </Flex>
-            <Button w="70%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{apple} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
-            <Button w="70%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{play} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
+            <Button w="80%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{apple} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
+            <Button w="80%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{play} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
 
             </Flex>
 
@@ -537,6 +413,10 @@ function Cart(){
         </Flex>
 
         </Box>
+
+        {/* Menu bar code */}
+
+        
 
 
 

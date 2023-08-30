@@ -1,6 +1,6 @@
 import "../Styles/Home.css";
-import {Flex,Box, InputRightElement, Heading} from "@chakra-ui/react";
-import {Menu,MenuButton,MenuList,MenuItem,
+import {Flex,Box, InputRightElement, Heading,Drawer,DrawerBody} from "@chakra-ui/react";
+import {Menu,MenuButton,MenuList,MenuItem,DrawerHeader,DrawerOverlay,DrawerContent,DrawerCloseButton,
     Button,Text,Input,
     InputLeftElement,InputGroup,useDisclosure} from '@chakra-ui/react'
 import logo from "../Styles/logo.gif"
@@ -8,9 +8,12 @@ import error from "../Styles/error.png"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserCircle,faUserMd,faLowVision,faGlobe,faSearch,faMicrophone,
 faAppleAlt,faPlay,faHeadphones,
-faPhone,faEnvelope,faComments } from '@fortawesome/free-solid-svg-icons';
+faPhone,faEnvelope,faComments, faHome, faCartPlus, faShoppingBag, faSignOut, faSignIn, faBars } from '@fortawesome/free-solid-svg-icons';
 import { faTelegram, faYoutube, faInstagram, faFacebook } from "@fortawesome/free-brands-svg-icons";
 import {useNavigate} from "react-router-dom"
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../AuthContextProvider/AuthContextProvider";
+import { Helmet } from "react-helmet";
 
 const Patient = <FontAwesomeIcon fade size="sm" icon={faUserCircle} />
 const doctor = <FontAwesomeIcon flip size="sm" icon={faUserMd} />
@@ -28,10 +31,22 @@ const telegram = <FontAwesomeIcon size="xl" icon={faTelegram} className="icon" /
 const youtube = <FontAwesomeIcon size="xl" icon={faYoutube} className="icon" />;
 const instagram = <FontAwesomeIcon size="xl" icon={faInstagram} className="icon" />;
 const facebook = <FontAwesomeIcon size="xl" icon={faFacebook} className="icon" />;
-
+const home = <FontAwesomeIcon size="sm" icon={faHome} />
+const cart = <FontAwesomeIcon size="sm" icon={faCartPlus} />
+const order = <FontAwesomeIcon size="sm" icon={faShoppingBag} />
+const log = <FontAwesomeIcon size="sm" icon={faSignOut} />
+const login = <FontAwesomeIcon size="sm" icon={faSignIn} />
+const bars = <FontAwesomeIcon size="lg" icon={faBars} />
 
 
 function NotFound(){
+
+    useEffect(()=>{
+        document.body.style.background = "#E0E9F6"
+        
+    },[])
+
+    const {userd,loginUser,logout,handleClickCart,cartDisclosure,handleMenuBar,MenuDisclosure} = useContext(AuthContext);
 
     const aboutUsDisclosure = useDisclosure();
     const faqDisclosure = useDisclosure();
@@ -59,71 +74,25 @@ function NotFound(){
         navigate("/cart")
     }
 
-    return <div>
+    return <div >
+        <Helmet>
+            <title>404 Not Found | Healthelper</title>
+        </Helmet>
 
-        {/* for Navbar Code */}
-        <Flex w="100%" align="center" justify="space-between" bg="primary.400" h="70px" p="0px 70px" position="fixed" top="0" zIndex="9999" boxShadow="rgba(0, 0, 0, 0.24) 0px 3px 8px" mb="120px">
-            <img onClick={handleLogo} id="logo" src={logo} alt="logo"/>
-            <Flex justify="space-between" flexBasis="28%" align="center" >
-                <Box onClick={handleDoctor} cursor="pointer" fontWeight="semibold">Doctors</Box>
-                <Menu isOpen={aboutUsDisclosure.isOpen} onOpen={aboutUsDisclosure.onOpen} onClose={aboutUsDisclosure.onClose}>
-                <MenuButton as={Button} 
-                variant="ghost" 
-                _hover={{bg:"primary.400",border:"1px solid black"}} 
-                _active={{bg:"secondary.100"}} 
-                onMouseEnter={handleMouseEnter}
-                >
-                    Profile
-                </MenuButton>
-                <MenuList onMouseEnter={aboutUsDisclosure.onOpen} onMouseLeave={aboutUsDisclosure.onClose}>
-                    <MenuItem>Dashboard</MenuItem>
-                    <MenuItem>Signup/Login</MenuItem>
-                    <MenuItem>My Cart</MenuItem>
-                    <MenuItem>My Orders</MenuItem>
-                </MenuList>
-                </Menu>
-                
-                <Menu isOpen={faqDisclosure.isOpen} onOpen={faqDisclosure.onOpen} onClose={faqDisclosure.onClose}>
-                <MenuButton as={Button} 
-                variant="ghost" 
-                _hover={{bg:"primary.400",border:"1px solid black"}} 
-                _active={{bg:"secondary.100"}} 
-                onMouseEnter={handleMOuse}
-                >
-                    FAQ
-                </MenuButton>
-                <MenuList onMouseEnter={faqDisclosure.onOpen} onMouseLeave={faqDisclosure.onClose}>
-                    <MenuItem>Address</MenuItem>
-                    <MenuItem>Doctors</MenuItem>
-                    <MenuItem>Fees</MenuItem>
-                    <MenuItem>Facility</MenuItem>
-                    <MenuItem>Digital</MenuItem>
-                </MenuList>
-                </Menu>
-                
-                <Box cursor="pointer" fontWeight="semibold">My Help</Box>
-            </Flex>
-            <Flex justify="space-between" flexBasis="21%" >
-            <Box cursor="pointer" id="findoctor" border="2px solid black" p="7px 5px" borderRadius="10px" fontWeight="semibold">{doctor} I'm a Doctor</Box>
-            <Box cursor="pointer" id="findmedical" border="2px solid black" p="7px 5px" borderRadius="10px" fontWeight="semibold">{Patient} I'm a Patient</Box>
-            </Flex>
-            <Box cursor="pointer" id="findoctor" border="2px solid black" p="7px 5px" borderRadius="10px" fontWeight="semibold">{visual} Visual Disabilities</Box>
-            <Box cursor="pointer" >{globe}</Box>
-        </Flex>
-
-        <Box style={{width:"100%",textAlign:"center",marginTop:"90px"}}>
+        <Box w="100%" textAlign="center" mt="110px" mb="0px" >
             <img id="error" src={error} alt="" />
             <Heading as="h3">Oops.. Page Not Found</Heading><br/>
-            <Button onClick={handleError} _hover={{bg:"primary.100",textColor:"black"}} bg="primary.300" textColor="white">Go To HomePage</Button>
+            <Button onClick={handleError} _hover={{bg:"primary.300",textColor:"black"}} bg="primary.100" textColor="white">Go To HomePage</Button>
         </Box>
 
         {/* Footer Bar lastly */}
 
-        <Box bg="primary.400" width="100%" pt="40px" pb="20px" mt="60px">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 250"><path fill="#AEBDD4" fill-opacity="1" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,170.7C840,181,960,235,1080,240C1200,245,1320,203,1380,181.3L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>
+        <Box bg="primary.400" width="100%" pt="40px" pb="20px">
 
-        <Flex width="100%" w="80%" justify="space-between"  m="auto">
+        <Flex width="100%" w="80%" justify="space-between"  m="auto" direction={{base:"column", sm: "column", md: "column", lg: "row", xl: "row", "2xl": "row" }}>
 
-            <Flex display="block" w="30%"  textAlign="left" fontWeight="semibold" cursor="pointer">
+            <Flex display="block" w={{base:"100%", sm: "100%", md: "100%", lg: "30%", xl: "30%", "2xl": "30%" }} mb={{base:"20px", sm: "20px", md: "20px", lg: "0px", xl: "0px", "2xl": "0px" }}  textAlign="left" fontWeight="semibold" cursor="pointer">
                 <img onClick={handleLogo} id="footerlogo" src={logo} alt="" />
                 <Text onClick={handleDoctor} m="3px">Doctors</Text>
                 <Text m="3px">About us</Text>
@@ -132,7 +101,7 @@ function NotFound(){
 
             </Flex>
 
-            <Flex display="block" w="34%"  textAlign="left" fontWeight="semibold" cursor="pointer">
+            <Flex display="block" w={{base:"100%", sm: "100%", md: "100%", lg: "34%", xl: "34%", "2xl": "34%" }} mb={{base:"20px", sm: "20px", md: "20px", lg: "0px", xl: "0px", "2xl": "0px" }}  textAlign="left" fontWeight="semibold" cursor="pointer">
             <InputGroup mb="10px">
                 <InputLeftElement>{search}</InputLeftElement>
                 <InputRightElement>{micro}</InputRightElement>
@@ -146,18 +115,18 @@ function NotFound(){
 
             </Flex>
 
-            <Flex display="block" w="30%" cursor="pointer">
+            <Flex display="block" w={{base:"100%", sm: "100%", md: "100%", lg: "30%", xl: "30%", "2xl": "30%" }} mb={{base:"20px", sm: "20px", md: "20px", lg: "0px", xl: "0px", "2xl": "0px" }} cursor="pointer">
 
             <Button onClick={handleDoctor} bg="primary.100" textColor="white"
-            _hover={{bg:"primary.100"}} w="70%" mb="10px">Book an appointment</Button>
-            <Flex w="70%" m="auto" justify="space-between" mb="10px" pl="10px" pr="10px">
+            _hover={{bg:"primary.100"}} w="80%" mb="10px">Book an appointment</Button>
+            <Flex w="80%" m="auto" justify="space-between" mb="10px" pl="10px" pr="10px">
                 <Text>{telegram}</Text>
                 <Text>{youtube}</Text>
                 <Text>{instagram}</Text>
                 <Text>{facebook}</Text>
             </Flex>
-            <Button w="70%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{apple} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
-            <Button w="70%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{play} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
+            <Button w="80%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{apple} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
+            <Button w="80%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{play} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
 
             </Flex>
 
@@ -165,6 +134,7 @@ function NotFound(){
         </Flex>
 
         </Box>
+
 
 
     </div>

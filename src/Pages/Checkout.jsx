@@ -1,6 +1,7 @@
 import {Flex,
     Box, Heading, InputRightElement, Center, Select, SimpleGrid} from "@chakra-ui/react";
-import {Menu,MenuButton,MenuList,MenuItem,
+import {Menu,MenuButton,MenuList,MenuItem,Drawer,DrawerOverlay,DrawerContent,
+    DrawerCloseButton,DrawerHeader,DrawerBody,
     Button,useDisclosure,Text,Input,Skeleton,useToast,FormControl,FormLabel,
     InputLeftElement,InputGroup,Card,Tooltip } from '@chakra-ui/react'
 import { CardHeader, CardBody, CardFooter,Image,Stack,Divider,ButtonGroup } from '@chakra-ui/react'
@@ -11,11 +12,12 @@ import {useNavigate} from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserCircle,faUserMd,faLowVision,faGlobe,faSearch,faMicrophone,
 faAppleAlt,faPlay, faArrowCircleRight,faHeadphones,
-faPhone,faEnvelope,faComments, faArrowRight, faCreditCardAlt, faHome, faCartPlus, faShoppingBag, faSignOut, faSignIn } from '@fortawesome/free-solid-svg-icons';
+faPhone,faEnvelope,faComments, faArrowRight, faCreditCardAlt, faHome, faCartPlus, faShoppingBag, faSignOut, faSignIn, faBars } from '@fortawesome/free-solid-svg-icons';
 import { faTelegram, faYoutube, faInstagram, faFacebook, faCcVisa } from "@fortawesome/free-brands-svg-icons";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../AuthContextProvider/AuthContextProvider";
 import Loading from "./Loading";
+import { Helmet } from "react-helmet";
 
 
 const Patient = <FontAwesomeIcon fade size="sm" icon={faUserCircle} />
@@ -46,10 +48,10 @@ const cart = <FontAwesomeIcon size="sm" icon={faCartPlus} />
 const order = <FontAwesomeIcon size="sm" icon={faShoppingBag} />
 const log = <FontAwesomeIcon size="sm" icon={faSignOut} />
 const login = <FontAwesomeIcon size="sm" icon={faSignIn} />
-
+const bars = <FontAwesomeIcon size="lg" icon={faBars} />
 
 function Checkout(){
-    const {userd,loginUser,logout,handleClickCart,cartDisclosure} = useContext(AuthContext);
+    const {count,setCount} = useContext(AuthContext);
 
     const aboutUsDisclosure = useDisclosure();
     const faqDisclosure = useDisclosure();
@@ -59,7 +61,8 @@ function Checkout(){
     const [date,setDate] = useState("");
     const [loadprocess,setLoadProcess] = useState(false);
     const [userdata,setUserData] = useState([]);
-    const [id,setId] = useState([])
+    let localcheck = localStorage.getItem("health_check");
+    const [check, setCheck] = useState(localcheck? JSON.parse(localcheck): []);
     const toast = useToast()
 
 
@@ -85,11 +88,7 @@ function Checkout(){
         fetchingData()
     },[])
 
-    useEffect(()=>{
-        if(data.length>0){
-            savingId()
-        }
-    },[data])
+    
 
     function fetchingData(){
         setLoading(true);
@@ -104,12 +103,7 @@ function Checkout(){
         })
     }
 
-    function savingId() {
-        data.map((item) => {
-            setId((prev) => [...prev, item.id]);
-          });
-          
-    }
+    
     // console.log(id)
     
 
@@ -127,6 +121,8 @@ function Checkout(){
 
     function handleSubmit(e){
         e.preventDefault();
+        let booked = Number(localStorage.getItem("booked_doctor")) || 0;
+        localStorage.setItem("booked_doctor",booked+data.length);
 
         setLoadProcess(true);
         // fetchingDATafromhere();
@@ -137,6 +133,7 @@ function Checkout(){
                 status: "success",
                 position: "top",
                 isClosable: true,
+                duration: 3500,
                 zIndex: 999999,
             });
             setLoadProcess(false);
@@ -156,33 +153,16 @@ function Checkout(){
     }
 
 
-    // function makingPost(){
-        
-    //     // setTimeout(() => {
-
-    //     //     axios.put(`https://reactapi23.onrender.com/patient/${userd.id}`,fulldetails)
-    //     //     .then(function(res){
-    //     //         setLoadProcess(false);
-                    
-    //     //     }).catch(function(error){
-    //     //         console.log(error);
-    //     //     })
-
-
-    //     // }, 3000);
-       
-       
-
-        
-        
-    // }
-
     function deletingItems() {
-        id.map((itemId) => {
+        check.forEach((itemId) => {
           axios
             .delete(`https://reactapi23.onrender.com/Cart/${itemId}`)
             .then(function (res) {
               console.log("success");
+              const updatedCheck = check.filter((id) => id !== itemId);
+              setCheck(updatedCheck);
+              localStorage.setItem("health_check",JSON.stringify(updatedCheck));
+              setCount((prev)=> prev+1);
             })
             .catch(function (error) {
               console.log(error);
@@ -194,63 +174,18 @@ function Checkout(){
     
 
     return <div>
-        {/* for Navbar Code */}
-        <Flex w="100%" align="center" justify="space-between" bg="primary.400" h="70px" p="0px 70px" position="fixed" top="0" zIndex="999" boxShadow="rgba(0, 0, 0, 0.24) 0px 3px 8px" mb="20px">
-            <img onClick={handleLogo} id="logo" src={logo} alt="logo"/>
-            <Flex justify="space-between" flexBasis="28%" align="center" >
-                <Box onClick={handleDoctor} cursor="pointer" fontWeight="semibold">Doctors</Box>
-                <Menu isOpen={aboutUsDisclosure.isOpen} onOpen={aboutUsDisclosure.onOpen} onClose={aboutUsDisclosure.onClose}>
-                <MenuButton as={Button} 
-                variant="ghost" 
-                _hover={{bg:"primary.400",border:"1px solid black"}} 
-                _active={{bg:"secondary.100"}} 
-                onMouseEnter={handleMouseEnter}
-                >
-                    Profile
-                </MenuButton>
-                <MenuList onMouseEnter={aboutUsDisclosure.onOpen} onMouseLeave={aboutUsDisclosure.onClose}>
-                    {userd.isAuth && <MenuItem fontWeight="bold" >Hlo, {userd.name}</MenuItem>}
-                    <MenuItem onClick={()=> navigate("/patienthome")}>{home} Dashboard</MenuItem>
-                    {userd.isAuth && <MenuItem fontWeight="semibold" onClick={()=>navigate(`/patientinfo/${userd.id}`)}>{Patient} See Profile</MenuItem>}
-                    <MenuItem onClick={()=>navigate("/cart")}>{cart} My Cart</MenuItem>
-                    <MenuItem>{order} My Orders</MenuItem>
-                    {userd.isAuth ? <MenuItem onClick={()=> logout()}>{log} Logout</MenuItem> : 
-                    <MenuItem onClick={()=> navigate("/signup")}>{login} Signup/Login</MenuItem>}
-                </MenuList>
-                </Menu>
-                
-                <Menu isOpen={faqDisclosure.isOpen} onOpen={faqDisclosure.onOpen} onClose={faqDisclosure.onClose}>
-                <MenuButton as={Button} 
-                variant="ghost" 
-                _hover={{bg:"primary.400",border:"1px solid black"}} 
-                _active={{bg:"secondary.100"}} 
-                onMouseEnter={handleMOuse}
-                >
-                    FAQ
-                </MenuButton>
-                <MenuList onMouseEnter={faqDisclosure.onOpen} onMouseLeave={faqDisclosure.onClose}>
-                    <MenuItem>Address</MenuItem>
-                    <MenuItem>Doctors</MenuItem>
-                    <MenuItem>Fees</MenuItem>
-                    <MenuItem>Facility</MenuItem>
-                    <MenuItem>Digital</MenuItem>
-                </MenuList>
-                </Menu>
-                
-                <Box cursor="pointer" fontWeight="semibold">My Help</Box>
-            </Flex>
-            <Flex justify="space-between" flexBasis="21%" >
-            <Box cursor="pointer" id="findoctor" border="2px solid black" p="7px 5px" borderRadius="10px" fontWeight="semibold">{doctor} I'm a Doctor</Box>
-            <Box cursor="pointer" id="findmedical" border="2px solid black" p="7px 5px" borderRadius="10px" fontWeight="semibold">{Patient} I'm a Patient</Box>
-            </Flex>
-            <Box cursor="pointer" id="findoctor" border="2px solid black" p="7px 5px" borderRadius="10px" fontWeight="semibold">{visual} Visual Disabilities</Box>
-            <Box cursor="pointer" >{globe}</Box>
-        </Flex>
+
+        <Helmet>
+            <title>Payment | Healthelper</title>
+        </Helmet>
 
         {/* for card component */}
         <Box w="80%" m="auto" mt="110px" mb="20px">
-        <Center><Heading bgGradient='linear(to-l, primary.100, black, primary.300)' bgClip='text'>Payment Page</Heading></Center>
-        <Heading textAlign='left' fontSize="25px" textColor="primary.100">Total: ₹{checkprice()}</Heading><br/><br/>
+        <Flex w="100%" bg="primary.100" color="white" p="5px 7px" fontWeight="bold" borderRadius="20px" justifyContent="space-between">
+            <Text>CHECKOUT</Text>
+            <Text>😷😷</Text>
+            <Text>{`Total:- ${checkprice()}`}</Text>
+        </Flex><br/>
         <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4, "2xl": 5 }} spacing={5}>
         {
             loding=== true ? <Loading /> : 
@@ -315,7 +250,7 @@ function Checkout(){
 
             {
                 loadprocess ? <Button w="100%" isLoading loadingText='Processing...' colorScheme='teal' variant='outline'>Processing...</Button> : 
-                <Input w="100%" cursor="pointer" textColor="white" fontWeight="bold" bg="primary.100" type="submit" value='Click to Payment' />
+                <Input disabled={data.length===0} w="100%" cursor="pointer" textColor="white" fontWeight="bold" bg="primary.100" type="submit" value='Click to Payment' />
             }
             
 
@@ -325,11 +260,12 @@ function Checkout(){
 
         {/* Footer Bar lastly */}
 
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 250"><path fill="#AEBDD4" fill-opacity="1" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,170.7C840,181,960,235,1080,240C1200,245,1320,203,1380,181.3L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>
         <Box bg="primary.400" width="100%" pt="40px" pb="20px">
 
-        <Flex width="100%" w="80%" justify="space-between"  m="auto">
+        <Flex width="100%" w="80%" justify="space-between"  m="auto" direction={{base:"column", sm: "column", md: "column", lg: "row", xl: "row", "2xl": "row" }}>
 
-            <Flex display="block" w="30%"  textAlign="left" fontWeight="semibold" cursor="pointer">
+            <Flex display="block" w={{base:"100%", sm: "100%", md: "100%", lg: "30%", xl: "30%", "2xl": "30%" }} mb={{base:"20px", sm: "20px", md: "20px", lg: "0px", xl: "0px", "2xl": "0px" }}  textAlign="left" fontWeight="semibold" cursor="pointer">
                 <img onClick={handleLogo} id="footerlogo" src={logo} alt="" />
                 <Text onClick={handleDoctor} m="3px">Doctors</Text>
                 <Text m="3px">About us</Text>
@@ -338,7 +274,7 @@ function Checkout(){
 
             </Flex>
 
-            <Flex display="block" w="34%"  textAlign="left" fontWeight="semibold" cursor="pointer">
+            <Flex display="block" w={{base:"100%", sm: "100%", md: "100%", lg: "34%", xl: "34%", "2xl": "34%" }} mb={{base:"20px", sm: "20px", md: "20px", lg: "0px", xl: "0px", "2xl": "0px" }}  textAlign="left" fontWeight="semibold" cursor="pointer">
             <InputGroup mb="10px">
                 <InputLeftElement>{search}</InputLeftElement>
                 <InputRightElement>{micro}</InputRightElement>
@@ -352,18 +288,18 @@ function Checkout(){
 
             </Flex>
 
-            <Flex display="block" w="30%" cursor="pointer">
+            <Flex display="block" w={{base:"100%", sm: "100%", md: "100%", lg: "30%", xl: "30%", "2xl": "30%" }} mb={{base:"20px", sm: "20px", md: "20px", lg: "0px", xl: "0px", "2xl": "0px" }} cursor="pointer">
 
             <Button onClick={handleDoctor} bg="primary.100" textColor="white"
-            _hover={{bg:"primary.100"}} w="70%" mb="10px">Book an appointment</Button>
-            <Flex w="70%" m="auto" justify="space-between" mb="10px" pl="10px" pr="10px">
+            _hover={{bg:"primary.100"}} w="80%" mb="10px">Book an appointment</Button>
+            <Flex w="80%" m="auto" justify="space-between" mb="10px" pl="10px" pr="10px">
                 <Text>{telegram}</Text>
                 <Text>{youtube}</Text>
                 <Text>{instagram}</Text>
                 <Text>{facebook}</Text>
             </Flex>
-            <Button w="70%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{apple} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
-            <Button w="70%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{play} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
+            <Button w="80%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{apple} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
+            <Button w="80%" display="block" m="auto" bg="transparent" border='2px solid #000' textColor="#000">{play} <span style={{ marginLeft: "7px" }}>Google Play</span></Button>
 
             </Flex>
 
@@ -371,6 +307,8 @@ function Checkout(){
         </Flex>
 
         </Box>
+
+        
 
     </div>
 }

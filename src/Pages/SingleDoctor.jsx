@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios"
 import { faTelegram, faYoutube, faFacebook, faPinterestSquare } from "@fortawesome/free-brands-svg-icons";
+import { Helmet } from "react-helmet";
 
 const telegram = <FontAwesomeIcon size="xl" icon={faTelegram} className="icon" />;
 const youtube = <FontAwesomeIcon size="xl" icon={faYoutube} className="icon" />;
@@ -40,13 +41,17 @@ function SingleDoctor(){
 
     console.log(data)
 
-    return <div id="container">
+    return <div id="container" style={{marginTop:"80px"}}>
+
+        <Helmet>
+            <title>{data? `${data.name} | Healthelper`:"Doctors | Healthelper"}</title>
+        </Helmet>
         
-        <Box onClick={()=> navigate("/cart")} w="60%" m="auto" textAlign="left">< Button _hover={{bg:"primary.300"}} bg="primary.100" textColor="white">{arrow} <span style={{marginLeft:"4px"}}>Go Back</span></Button></Box>
+        <Box onClick={()=> navigate("/cart")} w={{base:"95%", sm: "95%", md: "70%", lg: "60%", xl: "70%", "2xl": "80%" }} m="auto" textAlign="left">< Button _hover={{bg:"primary.300"}} bg="primary.100" textColor="white">{arrow} <span style={{marginLeft:"4px"}}>Go Back</span></Button></Box>
 
-        <Flex w="60%" m="auto" borderRadius="30px" bg="white" mt="30px" pb="30px">
+        <Flex w={{base:"95%", sm: "95%", md: "70%", lg: "60%", xl: "70%", "2xl": "80%" }} direction={{base:"column", sm: "column", md: "column", lg: "row", xl: "row", "2xl": "row" }} m="auto" borderRadius="30px" bg="white" mt="30px" pb="30px">
 
-            <Box w="35%" >
+            <Box w={{base:"90%", sm: "90%", md: "90%", lg: "35%", xl: "35%", "2xl": "35%" }} >
             <Card w="100%" borderRadius="30px 0px 0px 30px" textAlign="left" variant="unstyled">
             <CardBody p="50px" textColor="#3b5386" variant="unstyled">
                 {
@@ -77,7 +82,7 @@ function SingleDoctor(){
             </Card>
             </Box>
 
-            <Box w="65%">
+            <Box w={{base:"90%", sm: "90%", md: "90%", lg: "65%", xl: "65%", "2xl": "65%" }}>
             <Card w="100%" borderRadius="0px 30px 30px 0px" textAlign="left" variant="unstyled">
             <CardBody p="50px" pb="0px" borderRadius="0px 30px 30px 0px" variant="unstyled">
                 {

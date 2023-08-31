@@ -1,10 +1,10 @@
 import {Flex,Box, Heading, InputRightElement, Center, border,useToast} from "@chakra-ui/react";
-import {Menu,MenuButton,MenuList,MenuItem,
+import {
     Button,useDisclosure,Text,Input,
     InputLeftElement,InputGroup,Card,FormControl,FormLabel,Drawer,DrawerBody,DrawerHeader,DrawerOverlay,DrawerContent,DrawerCloseButton,
     FormErrorMessage,FormHelperText,Select} from '@chakra-ui/react'
 import "../Styles/Home.css";
-import logo from "../Styles/logo.gif"
+import doctor from "../Styles/doc.png"
 import {useNavigate,Navigate, useLocation} from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserCircle,faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -41,6 +41,7 @@ function Login(){
 
     useEffect(()=>{
         document.body.style.backgroundColor = "#E0E9F6";
+        document.body.style.backgroundImage ="none";
     },[])
 
 
@@ -110,13 +111,16 @@ function Login(){
     }
 
 
-    return <div>
+    return <Flex justifyContent={{base:"center",sm:"center",md:"space-evenly",lg:"space-evenly",xl:"space-evenly"}} gap="10px" w="97%" m="auto" mt={{base:"20px",sm:"50px",md:"60px",lg:"60px",xl:"60px"}} direction={{base:"column",sm:"column",md:"row",lg:"row",xl:"row"}}>
 
         <Helmet>
             <title>Login | Healthelper</title>
         </Helmet>
+        <Box boxShadow="inset 0px -11px 28px -10px #E0E9F6" w={{base:"100%",sm:"100%",md:"48%",lg:"48%",xl:"48%"}} mt={{base:"40px",sm:"0px",md:"0px",lg:"0px",xl:"0px"}} h={{base:"200px",sm:"250px",md:"auto",lg:"auto",xl:"auto"}} filter="hue-rotate(60deg)" backgroundSize="cover" backgroundImage={`url(${doctor})`}>
 
-    <Box w={{base:"95%", sm: "60%", md: "400px", lg: "400px", xl: "400px", "2xl": "400px" }} m="auto" mt={{base:"90px",sm:"120px",md:"130px",lg:"150px",xl:"150px"}} 
+        </Box>
+
+    <Box w={{base:"100%",sm:"100%",md:"380px",lg:"380px",xl:"380px"}} mt={{base:"0px",sm:"0px",md:"110px",lg:"110px",xl:"110px"}} 
     mb="30px" p="30px" pb="5px" borderRadius="10px" 
     bg={{base:"none",sm:"white",md:"white",lg:"white",xl:"white"}}
     boxShadow={{base:"none",sm:"rgba(0, 0, 0, 0.24) 0px 3px 8px",md:"rgba(0, 0, 0, 0.24) 0px 3px 8px",lg:"rgba(0, 0, 0, 0.24) 0px 3px 8px",xl:"rgba(0, 0, 0, 0.24) 0px 3px 8px"}}>
@@ -152,7 +156,7 @@ function Login(){
 
 
     
-</div>
+</Flex>
 }
 
 export default Login;

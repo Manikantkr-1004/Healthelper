@@ -1,41 +1,26 @@
-import {Flex,Box, Heading, InputRightElement, Center, border, useToast} from "@chakra-ui/react";
-import {Menu,MenuButton,MenuList,MenuItem,
+import {Flex,Box, Center, useToast} from "@chakra-ui/react";
+import {
     Button,useDisclosure,Text,Input,
-    InputLeftElement,InputGroup,Card,FormControl,FormLabel,Drawer,DrawerBody,DrawerHeader,DrawerOverlay,DrawerContent,DrawerCloseButton,
-    FormErrorMessage,FormHelperText,Select} from '@chakra-ui/react'
+    InputLeftElement,InputGroup,FormControl,FormLabel,FormHelperText,Select} from '@chakra-ui/react'
 import "../Styles/Home.css";
-import logo from "../Styles/logo.gif"
+import back from  "../Styles/back.png"
 import {Link, useNavigate,Navigate} from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserCircle,faUserMd,faLowVision,faGlobe,faSearch,faMicrophone,
-faAppleAlt,faPlay, faArrowCircleRight,faHeadphones,
-faPhone,faEnvelope,faComments, faArrowRight, faPencil, faArrowLeft, faCheckCircle, faHome, faCartPlus, faShoppingBag, faSignOut, faSignIn, faBars } from '@fortawesome/free-solid-svg-icons';
-import { faTelegram, faYoutube, faInstagram, faFacebook } from "@fortawesome/free-brands-svg-icons";
+import { faUserCircle, faArrowRight, faPencil, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../AuthContextProvider/AuthContextProvider";
 import { Helmet } from "react-helmet";
 
-const Patient = <FontAwesomeIcon fade size="sm" icon={faUserCircle} />
-const doctor = <FontAwesomeIcon flip size="sm" icon={faUserMd} />
-const visual = <FontAwesomeIcon size="sm" icon={faLowVision} />
-const globe = <FontAwesomeIcon size="lg" icon={faGlobe} />
 const pencil = <FontAwesomeIcon fade size="sm" icon={faPencil} />
 const user = <FontAwesomeIcon flip size="lg" icon={faUserCircle} />
 const arrowright = <FontAwesomeIcon shake size="sm" icon={faArrowRight} />
 const arrowleft = <FontAwesomeIcon shake size="sm" icon={faArrowLeft} />
-const check = <FontAwesomeIcon shake size="sm" icon={faCheckCircle} />
-const home = <FontAwesomeIcon size="sm" icon={faHome} />
-const cart = <FontAwesomeIcon size="sm" icon={faCartPlus} />
-const order = <FontAwesomeIcon size="sm" icon={faShoppingBag} />
-const log = <FontAwesomeIcon size="sm" icon={faSignOut} />
-const login = <FontAwesomeIcon size="sm" icon={faSignIn} />
-const bars = <FontAwesomeIcon size="lg" icon={faBars} />
 
 
 function Signup(){
 
-    const {userd,loginUser,logout,handleClickCart,cartDisclosure,handleMenuBar,MenuDisclosure} = useContext(AuthContext);
+    const {userd} = useContext(AuthContext);
 
     const aboutUsDisclosure = useDisclosure();
     const faqDisclosure = useDisclosure();
@@ -62,6 +47,7 @@ function Signup(){
     }
 
     useEffect(()=>{
+        document.body.style.backgroundImage =`url(${back})`;
         document.body.style.backgroundColor = "#E0E9F6";
         axios.get("https://reactapi23.onrender.com/patient")
         .then(function(res){

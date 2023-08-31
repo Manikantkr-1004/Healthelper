@@ -1,10 +1,9 @@
 import {Flex,
-    Box, Heading, InputRightElement, Center, Select, SimpleGrid} from "@chakra-ui/react";
-import {Menu,MenuButton,MenuList,MenuItem,Drawer,DrawerOverlay,DrawerContent,
-    DrawerCloseButton,DrawerHeader,DrawerBody,
-    Button,useDisclosure,Text,Input,Skeleton,useToast,FormControl,FormLabel,
-    InputLeftElement,InputGroup,Card,Tooltip } from '@chakra-ui/react'
-import { CardHeader, CardBody, CardFooter,Image,Stack,Divider,ButtonGroup } from '@chakra-ui/react'
+    Box, Heading, InputRightElement, SimpleGrid} from "@chakra-ui/react";
+import {
+    Button,useDisclosure,Text,Input,useToast,FormControl,FormLabel,
+    InputLeftElement,InputGroup,Card } from '@chakra-ui/react'
+import { CardHeader, CardBody,Image } from '@chakra-ui/react'
 import "../Styles/Home.css";
 import logo from "../Styles/logo.gif"
 import axios from "axios";
@@ -21,12 +20,6 @@ import { Helmet } from "react-helmet";
 
 
 const Patient = <FontAwesomeIcon fade size="sm" icon={faUserCircle} />
-const doctor = <FontAwesomeIcon flip size="sm" icon={faUserMd} />
-const doctoris = <FontAwesomeIcon size="sm" icon={faUserMd} />
-const doctor1 = <FontAwesomeIcon size="lg" icon={faUserMd} />
-const arrowrightis = <FontAwesomeIcon shake size="sm" icon={faArrowCircleRight} />
-const visual = <FontAwesomeIcon size="sm" icon={faLowVision} />
-const globe = <FontAwesomeIcon size="lg" icon={faGlobe} />
 const search = <FontAwesomeIcon size="lg" icon={faSearch} />
 const micro = <FontAwesomeIcon size="lg" icon={faMicrophone} />
 const apple = <FontAwesomeIcon size="lg" icon={faAppleAlt} />

@@ -1,24 +1,20 @@
 import "../Styles/Home.css";
-import {Flex,Box, InputRightElement, Heading,Drawer,DrawerBody} from "@chakra-ui/react";
-import {Menu,MenuButton,MenuList,MenuItem,DrawerHeader,DrawerOverlay,DrawerContent,DrawerCloseButton,
-    Button,Text,Input,
+import {Flex,Box, InputRightElement, Heading} from "@chakra-ui/react";
+import {Button,Text,Input,
     InputLeftElement,InputGroup,useDisclosure} from '@chakra-ui/react'
 import logo from "../Styles/logo.gif"
 import error from "../Styles/error.png"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserCircle,faUserMd,faLowVision,faGlobe,faSearch,faMicrophone,
+import { faSearch,faMicrophone,
 faAppleAlt,faPlay,faHeadphones,
-faPhone,faEnvelope,faComments, faHome, faCartPlus, faShoppingBag, faSignOut, faSignIn, faBars } from '@fortawesome/free-solid-svg-icons';
+faPhone,faEnvelope,faComments} from '@fortawesome/free-solid-svg-icons';
 import { faTelegram, faYoutube, faInstagram, faFacebook } from "@fortawesome/free-brands-svg-icons";
 import {useNavigate} from "react-router-dom"
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../AuthContextProvider/AuthContextProvider";
 import { Helmet } from "react-helmet";
 
-const Patient = <FontAwesomeIcon fade size="sm" icon={faUserCircle} />
-const doctor = <FontAwesomeIcon flip size="sm" icon={faUserMd} />
-const visual = <FontAwesomeIcon size="sm" icon={faLowVision} />
-const globe = <FontAwesomeIcon size="lg" icon={faGlobe} />
+
 const search = <FontAwesomeIcon size="lg" icon={faSearch} />
 const micro = <FontAwesomeIcon size="lg" icon={faMicrophone} />
 const apple = <FontAwesomeIcon size="lg" icon={faAppleAlt} />
@@ -31,12 +27,6 @@ const telegram = <FontAwesomeIcon size="xl" icon={faTelegram} className="icon" /
 const youtube = <FontAwesomeIcon size="xl" icon={faYoutube} className="icon" />;
 const instagram = <FontAwesomeIcon size="xl" icon={faInstagram} className="icon" />;
 const facebook = <FontAwesomeIcon size="xl" icon={faFacebook} className="icon" />;
-const home = <FontAwesomeIcon size="sm" icon={faHome} />
-const cart = <FontAwesomeIcon size="sm" icon={faCartPlus} />
-const order = <FontAwesomeIcon size="sm" icon={faShoppingBag} />
-const log = <FontAwesomeIcon size="sm" icon={faSignOut} />
-const login = <FontAwesomeIcon size="sm" icon={faSignIn} />
-const bars = <FontAwesomeIcon size="lg" icon={faBars} />
 
 
 function NotFound(){
@@ -46,7 +36,6 @@ function NotFound(){
         
     },[])
 
-    const {userd,loginUser,logout,handleClickCart,cartDisclosure,handleMenuBar,MenuDisclosure} = useContext(AuthContext);
 
     const aboutUsDisclosure = useDisclosure();
     const faqDisclosure = useDisclosure();

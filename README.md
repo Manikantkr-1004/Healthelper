@@ -64,5 +64,4 @@ To use Healthelper, follow these steps:
 ![Userinfo](https://github.com/Manikantkr-1004/torpid-cushion-8810/assets/123896779/d84ff421-e86f-467a-b3dc-1cfcdef5a833)
 
 # Credits
-**Healthelper** is an individual project developed by __Manikant Kumar__. The project was completed within a span of 5 days.  
-💖💖💖
+**Healthelper** is an individual project developed by __Manikant Kumar__. The project was completed within a span of 5 days.
